@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="562" leftMargin="30" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.331000000000004"/>
+	<property name="ireport.x" value="139"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#F8E6FD"/>
+		</conditionalStyle>
+	</style>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Column header" forecolor="#333333" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
+	<parameter name="str_categoria" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+p.idproducto, 
+p.noserie, 
+p.descripcion,
+p.precioCosto, 
+p.precioVenta, 
+p.precioMayoreo,
+c.nombre,
+p.existencia,
+p.cantidadMinima 
+FROM producto p
+INNER JOIN categoria c
+ON c.idcategoria = p.idcategoria
+WHERE p.inactivo <> 1 AND c.nombre = $P{str_categoria}
+ORDER BY p.idproducto DESC]]>
+	</queryString>
+	<field name="idproducto" class="java.lang.Integer"/>
+	<field name="noserie" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="precioCosto" class="java.math.BigDecimal"/>
+	<field name="precioVenta" class="java.math.BigDecimal"/>
+	<field name="precioMayoreo" class="java.math.BigDecimal"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="existencia" class="java.lang.Integer"/>
+	<field name="cantidadMinima" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="7" width="186" height="64"/>
+				<imageExpression class="java.lang.String"><![CDATA["src/Imagenes/logo_muebleria_4_header.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="Title" x="229" y="31" width="271" height="40"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE INVENTARIO]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="229" y="59" width="282" height="20" forecolor="#87419B"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="86" y="0" width="100" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="186" y="0" width="99" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRECIO COSTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="285" y="0" width="88" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRECIO VENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="373" y="0" width="70" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXISTENCIA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="443" y="0" width="100" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INV. MÍNIMO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="86" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO. SERIE]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="543" height="15"/>
+				<textField>
+					<reportElement x="0" y="0" width="86" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{noserie}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="86" y="0" width="100" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{descripcion}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="186" y="0" width="100" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{precioCosto}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="286" y="0" width="87" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{precioVenta}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="373" y="0" width="62" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{existencia}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="443" y="0" width="100" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{cantidadMinima}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="355" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="440" y="0" width="40" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

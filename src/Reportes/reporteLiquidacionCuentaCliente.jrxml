@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="500" pageHeight="666" whenNoDataType="AllSectionsNoDetail" columnWidth="500" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="nombre_cliente" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="encabezado" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="idcliente" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="saldo_pendiente" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="saldo_anterior" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+ROUND(
+    	(
+    	  (SUM(monto)) - (
+        
+        					SELECT
+							(SUM(monto))
+							FROM
+							movimientocliente
+							WHERE tipo = 1 AND idcliente = 9
+							GROUP BY idcliente
+    			    	)
+        ),2)ADEUDO_ANTERIOR
+FROM
+movimientocliente
+WHERE tipo = 0 AND idcliente = $P{idcliente}
+GROUP BY idcliente]]>
+	</queryString>
+	<field name="ADEUDO_ANTERIOR" class="java.lang.String"/>
+	<variable name="TOTAL_1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="84" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="7" width="111" height="53"/>
+				<imageExpression class="java.lang.String"><![CDATA["src/Imagenes/logo_muebleria_4_header.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="122" y="7" width="204" height="73"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{encabezado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="144" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="2" width="242" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIQUIDACIÓN DE ADEUDO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="4" y="22" width="238" height="15"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{nombre_cliente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="4" y="37" width="238" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="72" width="132" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ADEUDO ANTERIOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="57" width="238" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[=======================================]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="156" y="127" width="82" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{saldo_pendiente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="112" width="235" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[=======================================]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="92" width="132" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIQUIDACIÓN DE ADEUDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="127" width="132" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO PENDIENTE:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement x="142" y="72" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ADEUDO_ANTERIOR}.equals("null") ? "0" : $F{ADEUDO_ANTERIOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="142" y="92" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["$-"+$F{ADEUDO_ANTERIOR}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="19" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Prevent"/>
+	</detail>
+	<columnFooter>
+		<band height="15"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="22" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="62" splitType="Stretch"/>
+	</summary>
+</jasperReport>

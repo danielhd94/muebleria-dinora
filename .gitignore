@@ -1,0 +1,70 @@
+# NetBeans #
+**/nbproject/private/
+**/nbproject/Makefile-*
+**/nbproject/Package-*
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+*.bak
+*.lock
+*~
+# End of NetBeans
+
+# IntelliJ IDEA #
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+/classes/
+/*.class
+# End of IntelliJ IDEA
+
+# Eclipse #
+.project
+.classpath
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.target
+.classpath
+.springBeans
+.metadata/
+.hgignore
+# End of Eclipse
+
+# Maven #
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# End of Maven
+
+# Gradle #
+.gradle/
+build/
+!.gradle/
+# End of Gradle
+
+# Other #
+.DS_Store
+.sass-cache/
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+node_modules/
+# End of Other
+

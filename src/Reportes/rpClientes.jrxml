@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport 
+    xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+    name="rpClientes" 
+    language="groovy" 
+    pageWidth="595" 
+    pageHeight="842" 
+    columnWidth="555" 
+    leftMargin="20" 
+    rightMargin="20" 
+    topMargin="20"
+    bottomMargin="20" 
+    uuid="cf2e59a5-0adb-4389-9e7e-263d4ca87c8d">
+    <property name="ireport.zoom" value="1.5"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <queryString>
+		<![CDATA[SELECT 
+c.idcliente AS IDCLIENTE,
+c.nombre AS NOMBRE,
+c.direccion AS DIRECCION,
+c.telefono AS TELEFONO,
+ROUND(IFNULL(
+    		c.limiteCredito
+      ,0)
+,2) AS LIMITECREDITO,
+
+ROUND(IFNULL(
+    		(SELECT 
+			SUM(dt.cantidad * dt.precioVenta)
+			FROM detalleticket dt
+			INNER JOIN ticket t
+			ON dt.idticket = t.idticket
+			WHERE t.idcliente= c.idcliente AND t.estado <> 2
+			GROUP BY t.idcliente)
+       ,0)
+,2) AS GASTADO,
+        
+ROUND((IFNULL(
+    		(SELECT SUM(p.monto)
+			FROM cliente c2
+			LEFT JOIN pago p
+			ON c2.idcliente = p.idcliente
+			WHERE c2.idcliente = c.idcliente
+			GROUP BY c2.idcliente)
+   	   ,0)
+    )
+,2) AS ABONADO,
+
+ROUND(IFNULL(
+    		(c.limiteCredito - (SELECT 
+								SUM(dt.cantidad * dt.precioVenta)
+								FROM detalleticket dt
+								INNER JOIN ticket t
+								ON dt.idticket = t.idticket
+								WHERE t.idcliente= c.idcliente AND t.estado <> 2
+								GROUP BY t.idcliente) + ROUND((IFNULL(
+                                    									(SELECT SUM(p.monto)
+																		FROM cliente c2
+																		LEFT JOIN pago p
+																		ON c2.idcliente = p.idcliente
+																		WHERE c2.idcliente = c.idcliente
+																		GROUP BY c2.idcliente)
+                                                               ,0)
+                                                              )
+                                                         ,2)
+            )
+      ,c.limiteCredito)
+,2) AS SALDO_ACTUAL,
+
+IFNULL(
+      (select fecha from pago
+        WHERE idcliente = c.idcliente AND monto <> 0
+        ORDER BY idpago DESC LIMIT 1
+      )
+,'-') AS ULTIMO_PAGO
+FROM cliente c
+WHERE c.inactivo <> 1 AND c.idcliente <> 1
+GROUP BY c.idcliente
+ORDER BY c.idcliente DESC]]>
+    </queryString>
+    <field name="NOMBRE" class="java.lang.String"/>
+    <field name="DIRECCION" class="java.lang.String"/>
+    <field name="TELEFONO" class="java.lang.String"/>
+    <field name="LIMITECREDITO" class="java.lang.String"/>
+    <field name="SALDO_ACTUAL" class="java.lang.String"/>
+    <field name="ULTIMO_PAGO" class="java.lang.String"/>
+    <background>
+        <band/>
+    </background>
+    <title>
+        <band height="72">
+            <frame>                                                                            <!--006699-->
+                <reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#1F191A" uuid="1d58be52-4816-4d30-bc13-4c2196e92d4e"/>
+                <staticText>
+                    <reportElement x="20" y="20" width="280" height="43" forecolor="#9B3F9F" uuid="0e4676b8-b829-4a52-bcb3-9710e782ba27"/>
+                    <textElement>
+                        <font size="34" isBold="true"/>
+                    </textElement>
+                    <text><![CDATA[Muebleria Dinora]]></text>
+                </staticText>   
+                <staticText>
+                    <reportElement x="395" y="43" width="180" height="20" forecolor="#FFFFFF" uuid="7c50a207-6d95-4e1d-a089-cab471492df5"/>
+                    <textElement textAlignment="Right">
+                        <font size="14" isBold="false"/>
+                    </textElement>
+                    <text><![CDATA[Listado de clientes]]></text>
+                </staticText>
+            </frame>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="13"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="34">
+            <line>
+                <reportElement x="-20" y="20" width="595" height="1" forecolor="#666666" uuid="a18a62c9-2a75-44c9-a903-56a2868b751a"/>
+            </line>
+            <staticText>
+                <reportElement x="9" y="1" width="50" height="20" uuid="4dc5e5db-e11b-4afc-85e9-697904f6411f"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[NOMBRE]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="1" width="250" height="20" uuid="6bf26692-0a58-4dcb-9638-7e0d25b0a589"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[DIRECCIÓN]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="252" y="1" width="80" height="20" uuid="7c5dba18-91e5-461a-90b2-f21a1d16c8e8"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[TELÉFONO]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="319" y="1" width="150" height="20" uuid="b8a82fbc-b327-4130-9e1c-49dc2709ce67"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[LIMITE CRÉDITO]]></text>                
+            </staticText>
+            <staticText>
+                <reportElement x="408" y="1" width="150" height="20" uuid="b8a82fbc-b327-4130-9e1c-49dc2709ce67"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[SALDO A.]]></text>                
+            </staticText>
+            <staticText>
+                <reportElement x="474" y="1" width="150" height="20" uuid="b8a82fbc-b327-4130-9e1c-49dc2709ce67"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ú. PAGO]]></text>                
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="31">
+            <textField>
+                <reportElement x="9" y="11" width="150" height="20" uuid="5ec33632-e0f4-4242-a2b7-7e11f3773a3f"/>                
+                <textFieldExpression><![CDATA[$F{NOMBRE}]]></textFieldExpression>               
+            </textField>
+            <textField>
+                <reportElement x="150" y="11" width="250" height="20" uuid="f26a2272-cff4-485f-8e99-af3f52d1d665"/>                
+                <textFieldExpression><![CDATA[$F{DIRECCION}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="252" y="11" width="80" height="20" uuid="9ba6243f-c32f-4234-9b83-9cf575ea11e8"/>
+                <textFieldExpression><![CDATA[$F{TELEFONO}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="11" width="150" height="20" uuid="185abc59-bdaf-4054-a0eb-a1082522b741"/>
+                <textFieldExpression><![CDATA[$F{LIMITECREDITO}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="408" y="11" width="150" height="20" uuid="185abc59-bdaf-4054-a0eb-a1082522b741"/>
+                <textFieldExpression><![CDATA[$F{SALDO_ACTUAL}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="474" y="11" width="150" height="20" uuid="185abc59-bdaf-4054-a0eb-a1082522b741"/>
+                <textFieldExpression><![CDATA[$F{ULTIMO_PAGO}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band/>
+    </columnFooter>
+    <pageFooter>
+        <band height="17">
+            <textField>
+                <reportElement mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" uuid="3bf4427d-2b74-4b4b-b6ae-9bc6a381a49b"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Report">
+                <reportElement mode="Opaque" x="515" y="4" width="40" height="13" backcolor="#E6E6E6" uuid="0d730c4f-9d6f-4607-a78e-66936be9e77b"/>
+                <textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField pattern="EEEEE dd MMMMM yyyy">
+                <reportElement x="0" y="4" width="100" height="13" uuid="08dbfeae-d059-4b9f-ac48-cf42ac7ee6f1"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+    <summary>
+        <band/>
+    </summary>
+</jasperReport>

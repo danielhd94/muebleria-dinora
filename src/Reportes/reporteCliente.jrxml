@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="562" leftMargin="30" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.2396694214876078"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#F8E6FD"/>
+		</conditionalStyle>
+	</style>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Column header" forecolor="#333333" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
+	<queryString>
+		<![CDATA[SELECT 
+c.idcliente AS IDCLIENTE,
+c.nombre AS NOMBRE,
+c.direccion AS DIRECCION,
+c.telefono AS TELEFONO,
+ROUND(IFNULL(
+    		c.limiteCredito
+      ,0)
+,2) AS LIMITECREDITO,
+
+ROUND(IFNULL(
+    		(SELECT 
+			SUM(dt.cantidad * dt.precioVenta)
+			FROM detalleticket dt
+			INNER JOIN ticket t
+			ON dt.idticket = t.idticket
+			WHERE t.idcliente= c.idcliente AND t.estado <> 2
+			GROUP BY t.idcliente)
+       ,0)
+,2) AS GASTADO,
+        
+ROUND((IFNULL(
+    		(SELECT SUM(p.monto)
+			FROM cliente c2
+			LEFT JOIN pago p
+			ON c2.idcliente = p.idcliente
+			WHERE c2.idcliente = c.idcliente
+			GROUP BY c2.idcliente)
+   	   ,0)
+    )
+,2) AS ABONADO,
+
+ROUND(IFNULL(
+    		(c.limiteCredito - (SELECT 
+								SUM(dt.cantidad * dt.precioVenta)
+								FROM detalleticket dt
+								INNER JOIN ticket t
+								ON dt.idticket = t.idticket
+								WHERE t.idcliente= c.idcliente AND t.estado <> 2
+								GROUP BY t.idcliente) + ROUND((IFNULL(
+                                    									(SELECT SUM(p.monto)
+																		FROM cliente c2
+																		LEFT JOIN pago p
+																		ON c2.idcliente = p.idcliente
+																		WHERE c2.idcliente = c.idcliente
+																		GROUP BY c2.idcliente)
+                                                               ,0)
+                                                              )
+                                                         ,2)
+            )
+      ,c.limiteCredito)
+,2) AS SALDO_ACTUAL,
+
+IFNULL(
+      (select Date_format(fecha,'%Y-%m-%d') from pago
+        WHERE idcliente = c.idcliente AND monto <> 0
+        ORDER BY idpago DESC LIMIT 1
+      )
+,'-') AS ULTIMO_PAGO
+FROM cliente c
+WHERE c.inactivo <> 1 AND c.idcliente <> 1
+GROUP BY c.idcliente
+ORDER BY c.idcliente DESC]]>
+	</queryString>
+	<field name="IDCLIENTE" class="java.lang.Integer"/>
+	<field name="NOMBRE" class="java.lang.String"/>
+	<field name="DIRECCION" class="java.lang.String"/>
+	<field name="TELEFONO" class="java.lang.String"/>
+	<field name="LIMITECREDITO" class="java.math.BigDecimal"/>
+	<field name="GASTADO" class="java.math.BigDecimal"/>
+	<field name="ABONADO" class="java.math.BigDecimal"/>
+	<field name="SALDO_ACTUAL" class="java.math.BigDecimal"/>
+	<field name="ULTIMO_PAGO" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="17" y="11" width="180" height="60"/>
+				<imageExpression class="java.lang.String"><![CDATA["src/Imagenes/logo_muebleria_4_header.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="Title" x="230" y="19" width="332" height="27"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[LISTADO DE CLIENTES]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="230" y="46" width="271" height="20" forecolor="#87419B"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="0" y="0" width="82" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="82" y="0" width="80" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIRECCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="162" y="0" width="68" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TELEFONO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="230" y="0" width="79" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIMITECREDITO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="309" y="0" width="100" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO ACTUAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" mode="Opaque" x="409" y="0" width="92" height="15" forecolor="#FFFFFF" backcolor="#343233"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ULTIMO PAGO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="15" width="501" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="496" height="15"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" x="0" y="0" width="82" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{NOMBRE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" x="82" y="0" width="80" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DIRECCION}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="false">
+					<reportElement style="Detail" x="162" y="0" width="68" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{TELEFONO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Detail" x="230" y="0" width="79" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{LIMITECREDITO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Detail" x="309" y="0" width="100" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{SALDO_ACTUAL}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Detail" x="409" y="0" width="87" height="15"/>
+					<box>
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ULTIMO_PAGO}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="371" y="1" width="80" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="456" y="1" width="40" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

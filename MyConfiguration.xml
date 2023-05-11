@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Sistema>
+    <nombre>Mueblería Dinora</nombre>
+    <componentes>
+        <componente id="1">
+            <nombre>ticket</nombre>
+        </componente>
+        <componente id="2">
+            <nombre>logotipo</nombre>
+            <rutaLogo>C:\Users\Developer\Documents\NetBeansProjects\MuebleriaDinora\src\Imagenes\logo\logo_muebleria_4_header.png</rutaLogo>
+        </componente>
+        <componente id="3">
+            <nombre>ticket</nombre>
+            <encabezado>MUEBLERIA DINORA/2DA AV. SUR PONIENTE/BARRIO MORELOS/BOCHIL,CHIAPAS/919 108 9710</encabezado>
+            <mensaje>GRACIAS POR SU COMPRA</mensaje>
+        </componente>
+        <componente id="4">
+            <nombre>impuestos</nombre>
+            <activado>TRUE/016</activado>
+        </componente>
+        <componente id="5">
+            <nombre>impresora</nombre>
+            <impresora>Microsoft Print to PDF</impresora>
+        </componente>
+    </componentes>
+</Sistema>
